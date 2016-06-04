@@ -2,12 +2,6 @@
     CONSOLE APPLICATION : Pong Project Overview
 ========================================================================
 
-AppWizard has created this Pong application for you.
-
-This file contains a summary of what you will find in each of the files that
-make up your Pong application.
-
-
 Pong.vcxproj
     This is the main project file for VC++ projects generated using an Application Wizard.
     It contains information about the version of Visual C++ that generated the file, and
@@ -34,7 +28,9 @@ StdAfx.h, StdAfx.cpp
 /////////////////////////////////////////////////////////////////////////////
 Other notes:
 
-AppWizard uses "TODO:" comments to indicate parts of the source code you
-should add to or customize.
+Need to add OOP behaviors in order to split up and make the code more readable.
+Need to add random "powerups" to make the game more interesting!
+
+Original tutorial from http://noobtuts.com/cpp/2d-pong-game
 
 /////////////////////////////////////////////////////////////////////////////
