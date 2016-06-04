@@ -169,7 +169,7 @@ int _tmain(int argc, char** argv)
 	glutInitWindowSize(width, height);
 	glutCreateWindow("Pongish!");
 
-	//Register Callback Functions
+	//Register Callback Functions test
 	glutDisplayFunc(draw);
 	glutTimerFunc(interval, update, 0);
 
