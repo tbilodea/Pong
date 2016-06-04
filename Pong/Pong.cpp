@@ -33,10 +33,77 @@ float racket_left_y = 50;
 float racket_right_x = width - racket_width - 10;
 float racket_right_y = 50;
 
+//ball
+float ball_pos_x = width / 2;
+float ball_pos_y = height / 2;
+float ball_dir_x = -1.0f;
+float ball_dir_y = 0.0f;
+int ball_size = 8;
+int ball_speed = 2;
+
+void normVec(float& x, float& y) {
+	float sqxy = sqrt(x*x + y*y);
+	if (sqxy != 0.0f) {
+		x = x/sqxy;
+		y = y/sqxy;
+	}
+}
+
+void updateBall() {
+	//fly in a direction
+	ball_pos_x += ball_dir_x * ball_speed;
+	ball_pos_y += ball_dir_y * ball_speed;
+
+	//left racket
+	if (ball_pos_x < racket_left_x + racket_width &&
+		ball_pos_x > racket_left_x &&
+		ball_pos_y < racket_left_y + racket_height &&
+		ball_pos_y > racket_left_y) {
+		//set fly depending on where it hits the paddle
+		float t = ((ball_pos_y - racket_left_y) / racket_height) - 0.5f;
+		ball_dir_x = fabs(ball_dir_x);
+		ball_dir_y = t;
+	}
+	//right racket
+	if (ball_pos_x > racket_right_x &&
+		ball_pos_x < racket_right_x + racket_width &&
+		ball_pos_y < racket_right_y + racket_height &&
+		ball_pos_y > racket_right_y) {
+		//set fly depending on where it hits the paddle
+		float t = ((ball_pos_y - racket_right_y) / racket_height) - 0.5f;
+		ball_dir_x = -fabs(ball_dir_x);
+		ball_dir_y = t;
+	}
+	//left wall
+	if (ball_pos_x < 0) {
+		++score_right;
+		ball_pos_x = width / 2;
+		ball_pos_y = height / 2;
+		ball_dir_x = fabs(ball_dir_x);
+		ball_dir_y = 0;
+	}
+	//right wall
+	if (ball_pos_x > width) {
+		++score_left;
+		ball_pos_x = width / 2;
+		ball_pos_y = height / 2;
+		ball_dir_x = -fabs(ball_dir_x);
+		ball_dir_y = 0;
+	}
+	//top barrier
+	if (ball_pos_y > height) {
+		ball_dir_y = -fabs(ball_dir_y);
+	}
+	//bottom barrier
+	if (ball_pos_y < 0) {
+		ball_dir_y = fabs(ball_dir_y);
+	}
+	normVec(ball_dir_x, ball_dir_y);
+}
 void keyboard() {
 	//left racket
-	if (GetAsyncKeyState('W') & 0x8000) racket_left_y += racket_speed;
-	if (GetAsyncKeyState('S') & 0x8000) racket_left_y -= racket_speed;
+	if (GetAsyncKeyState('W')) racket_left_y += racket_speed;
+	if (GetAsyncKeyState('S')) racket_left_y -= racket_speed;
 	//right racket
 	if (GetAsyncKeyState(VK_UP)) racket_right_y += racket_speed;
 	if (GetAsyncKeyState(VK_DOWN)) racket_right_y -= racket_speed;
@@ -44,11 +111,11 @@ void keyboard() {
 
 void drawRect(float x, float y, float width, float height) {
 	glBegin(GL_QUADS);
-	glVertex2f(x, y);
-	glVertex2f(x + width, y);
-	glVertex2f(x + width, y + height);
-	glVertex2f(x, y + height);
-	glEnd();
+		glVertex2f(x, y);
+		glVertex2f(x + width, y);
+		glVertex2f(x + width, y + height);
+		glVertex2f(x, y + height);
+	glEnd();	
 }
 
 void drawText(float x, float y, std::string text) {
@@ -68,13 +135,17 @@ void draw() {
 	std::ostringstream score;
 	score << score_left << ":" << score_right;
 	drawText(width / 2 - 10, height - 15, score.str());
-	
+	//drawball
+	drawRect(ball_pos_x - ball_size / 2, ball_pos_y - ball_size / 2, ball_size, ball_size);
+
 	//swap buffers
 	glutSwapBuffers();
 }
 
 void update(int value) {
-	keyboard();
+	keyboard(); //update keypress
+	//update ball
+	updateBall();
 
 	glutTimerFunc(interval, update, 0); //call update in an interval
 	//redisplay
