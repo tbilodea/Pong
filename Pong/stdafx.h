@@ -9,6 +9,15 @@
 
 #include <stdio.h>
 #include <tchar.h>
+#include <string>
+#include <Windows.h>
+#include <iostream>
+#include <conio.h>
+#include <sstream>
+#include <math.h>
+#include <gl\GL.h>
+#include <gl\GLU.h>
+#include "GL/freeglut.h"
 
 
 
