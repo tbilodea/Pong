@@ -13,7 +13,7 @@ private:
 	int height;
 
 public:
-	Paddle(int wide, int high, int posx, int posy, int speed) {
+	Paddle(int wide, int high, float posx, float posy, int speed) {
 		padheight = high;
 		padwidth = wide;
 		padpos_x = posx;
@@ -21,8 +21,8 @@ public:
 		pad_speed = speed;
 	}
 
-	int getPaddlePosx();
-	int getPaddlePosy();
+	float getPaddlePosx();
+	float getPaddlePosy();
 	int getPaddleWidth();
 	int getPaddleHeight();
 	void movePaddleVertical(bool);

@@ -5,21 +5,21 @@
 //called upon keypress command for one of the paddles
 void Paddle::movePaddleVertical(bool up) {
 	if (up) { //if button was to go up
-		if (padpos_y < height-padheight) { //check if the paddle is at the top
+		if (padpos_y < screenHeight-padheight) { //check if the paddle is at the top
 			padpos_y += pad_speed;
 		}
 	}else{ //else try to go down
-		if (padpos_y > padheight) {
+		if (padpos_y > 0) {
 			padpos_y -= pad_speed;
 		}
 	}
 }
 
 //get positions for ball updating
-int Paddle::getPaddlePosx() {
+float Paddle::getPaddlePosx() {
 	return padpos_x;
 }
-int Paddle::getPaddlePosy() {
+float Paddle::getPaddlePosy() {
 	return padpos_y;
 }
 int Paddle::getPaddleWidth() {

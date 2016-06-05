@@ -26,13 +26,13 @@ void Ball::updateBall(Paddle P1, Paddle P2) {
 		ball_pos_y < P2.getPaddlePosy() + P2.getPaddleHeight() &&
 		ball_pos_y > P2.getPaddlePosy()) {
 		//set fly depending on where it hits the paddle
-		float t = ((ball_pos_y - P2.getPaddlePosy()) / P2.getPaddleHeight()) - 0.5f;
+		float t = ( (ball_pos_y - P2.getPaddlePosy()) / (P2.getPaddleHeight()) ) - 0.5f;
 		ball_dir_x = -fabs(ball_dir_x);
-		ball_dir_y = t;
+		ball_dir_y = 2*t;
 	}
 
 	//top barrier
-	if (ball_pos_y > height) {
+	if (ball_pos_y > screenHeight) {
 		ball_dir_y = -fabs(ball_dir_y);
 	}
 	//bottom barrier
@@ -60,10 +60,10 @@ int Ball::getBallPosy() {
 int Ball::size() {
 	return ball_size;
 }
-
+//after a score reset the ball
 void Ball::resetBall(bool headedRight) {
-	ball_pos_x = width / 2;
-	ball_pos_y = height / 2;
+	ball_pos_x = screenWidth / 2;
+	ball_pos_y = screenHeight / 2;
 	ball_dir_y = 0.0f;
 
 	if (headedRight) {

@@ -11,7 +11,8 @@
 
 
 //window size
-int screenSize[2] = { 500,200 }; //width and height array
+int screenWidth = 500; //width and height array
+int screenHeight = 200;
 int interval = 1000/60; //fps 60
 bool flagStart = true; //splashscreen/pausescreen flag
 
@@ -20,21 +21,21 @@ int score_left = 0;
 int score_right = 0;
 
 //racket variables
-int racket_width = 10;
-int racket_height = 40;
+int racket_width = 5;
+int racket_height = 80;
 int racket_speed = 3;
 
 //left racket pos
 float racket_left_x = 10.0f;
-float racket_left_y = 50;
+float racket_left_y = screenHeight/2;
 
 //right racket pos
-float racket_right_x = width - racket_width - 10;
-float racket_right_y = 50;
+float racket_right_x = screenWidth - racket_width - 10;
+float racket_right_y = screenHeight/2;
 
-Ball ball1 = Ball(screenSize[1]/2,screenSize[2]/2,-1.0f,0.0,3,5);
+Ball ball1 = Ball(screenWidth/2,screenHeight/2,-1.0f,0.0,3,3);
 Paddle Paddle_Left = Paddle(racket_width, racket_height, racket_left_x, racket_left_y, racket_speed);
-Paddle Paddle_Right = Paddle(racket_width, racket_height, racket_left_x, racket_left_y, racket_speed);
+Paddle Paddle_Right = Paddle(racket_width, racket_height, racket_right_x, racket_right_y, racket_speed);
 
 void keyboard() {
 	if (GetAsyncKeyState('P')) flagStart = true;
@@ -57,9 +58,8 @@ void drawRect(float x, float y, float width, float height) {
 
 void drawText(float x, float y, std::string text) {
 	glRasterPos2f(x, y);
-	glutBitmapString(GLUT_BITMAP_8_BY_13, (const unsigned char*)text.c_str());
+	glutBitmapString(GLUT_BITMAP_HELVETICA_18, (const unsigned char*)text.c_str());
 }
-
 
 void draw() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -68,24 +68,25 @@ void draw() {
 	if (!flagStart) {
 		//Draw the scene
 		//Draw the rackets
-		drawRect(racket_left_x, racket_left_y, racket_width, racket_height);
-		drawRect(racket_right_x, racket_right_y, racket_width, racket_height);
+		drawRect(Paddle_Left.getPaddlePosx(), Paddle_Left.getPaddlePosy(), Paddle_Left.getPaddleWidth(), Paddle_Left.getPaddleHeight());
+		drawRect(Paddle_Right.getPaddlePosx(), Paddle_Right.getPaddlePosy(), Paddle_Right.getPaddleWidth(), Paddle_Right.getPaddleHeight());
 
 		//drawscore
 		std::ostringstream score;
 		score << score_left << ":" << score_right;
-		drawText(width / 2 - 10, height - 15, score.str());
+		drawText(screenWidth / 2 - 10, screenHeight - 15, score.str());
 		//drawball
 		drawRect(ball1.getBallPosx() - ball1.size() / 2, ball1.getBallPosy() - ball1.size() / 2, ball1.size(), ball1.size());
 	}else{
-		glRasterPos2f(width / 2, height * 3 / 4); //position of text
+		glRasterPos2f(screenWidth /3, screenHeight * 3 / 4); //position of text
 		std::string Welcome;
-		Welcome = "                 PONG!                 \nControls are W,S for left side, Up and Down arrows for the right.\nPress \"P\" to pause.\nPUSH SPACE TO CONTINUE!";
+		Welcome = "                              PONG!\nControls are W,S for left side, Up and Down arrows for the right.\n             Press P to pause, ESC to quit.\n       PUSH SPACE TO CONTINUE!";
 		glutBitmapString(GLUT_BITMAP_HELVETICA_18, (const unsigned char*)Welcome.c_str());
 	}
 	//swap buffers
 	glutSwapBuffers();
 }
+
 bool checkScore() {
 	//left wall
 	if (ball1.getBallPosx() < 0) {
@@ -93,7 +94,7 @@ bool checkScore() {
 		ball1.resetBall(true);//reset the direction toward +x
 		return true;
 	}
-	else if(ball1.getBallPosx() > width) {
+	else if(ball1.getBallPosx() > screenWidth) {
 		++score_left;
 		ball1.resetBall(false);
 		return true;
@@ -104,7 +105,7 @@ bool checkScore() {
 
 void update(int value) {
 	if (GetAsyncKeyState(VK_SPACE)) flagStart = false; //check if we are resuming after a break
-
+	if (GetAsyncKeyState(VK_ESCAPE)) glutDestroyWindow(glutGetWindow()); //exit glloop
 	//check splashscreen or pause
 	if (flagStart == false) {
 		keyboard(); //update keypress
@@ -124,6 +125,7 @@ void enable2D(int width, int height) {
 	glOrtho(0.0f, width, 0.0f, height, 0.0f, 1.0f); //dims of matrix
 	glMatrixMode(GL_MODELVIEW); //sets matrix
 	glLoadIdentity();
+	glutFullScreen();
 }
 
 int _tmain(int argc, char** argv)
@@ -131,7 +133,7 @@ int _tmain(int argc, char** argv)
 	//open a window
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-	glutInitWindowSize(width, height);
+	glutInitWindowSize(screenWidth, screenHeight);
 	glutCreateWindow("Pong-ish!");
 
 	//Register Callback Functions
@@ -139,7 +141,7 @@ int _tmain(int argc, char** argv)
 	glutTimerFunc(interval, update, 0); //glutMainLoop goes to update at interval
 
 	//set scene
-	enable2D(width, height);
+	enable2D(screenWidth, screenHeight);
 	glColor3f(1.0f, 1.0f, 1.0f);
 	
 	//start
