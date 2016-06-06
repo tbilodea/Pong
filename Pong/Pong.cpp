@@ -2,111 +2,49 @@
 //
 
 #include "stdafx.h"
-#include <string>
-#include <Windows.h>
-#include <iostream>
-#include <conio.h>
-#include <sstream>
-#include <math.h>
-#include <gl\GL.h>
-#include <gl\GLU.h>
-#include "GL/freeglut.h"
+
 #pragma comment(lib, "OpenGL32.lib")
 
+#include "Ball.h"
+#include "Paddle.h"
+#include "Pong.h"
+
+
 //window size
-int height = 200;
-int width = 500;
+int screenWidth = 500; //width and height array
+int screenHeight = 200;
 int interval = 1000/60; //fps 60
+bool flagStart = true; //splashscreen/pausescreen flag
 
 //score
 int score_left = 0;
 int score_right = 0;
-int racket_width = 10;
+
+//racket variables
+int racket_width = 5;
 int racket_height = 80;
 int racket_speed = 3;
 
 //left racket pos
 float racket_left_x = 10.0f;
-float racket_left_y = 50;
+float racket_left_y = screenHeight/2;
 
 //right racket pos
-float racket_right_x = width - racket_width - 10;
-float racket_right_y = 50;
+float racket_right_x = screenWidth - racket_width - 10;
+float racket_right_y = screenHeight/2;
 
-//ball
-float ball_pos_x = width / 2;
-float ball_pos_y = height / 2;
-float ball_dir_x = -1.0f;
-float ball_dir_y = 0.0f;
-int ball_size = 8;
-int ball_speed = 2;
+Ball ball1 = Ball(screenWidth/2,screenHeight/2,-1.0f,0.0,3,3);
+Paddle Paddle_Left = Paddle(racket_width, racket_height, racket_left_x, racket_left_y, racket_speed);
+Paddle Paddle_Right = Paddle(racket_width, racket_height, racket_right_x, racket_right_y, racket_speed);
 
-void normVec(float& x, float& y) {
-	float sqxy = sqrt(x*x + y*y);
-	if (sqxy != 0.0f) {
-		x = x/sqxy;
-		y = y/sqxy;
-	}
-}
-
-void updateBall() {
-	//fly in a direction
-	ball_pos_x += ball_dir_x * ball_speed;
-	ball_pos_y += ball_dir_y * ball_speed;
-
-	//left racket
-	if (ball_pos_x < racket_left_x + racket_width &&
-		ball_pos_x > racket_left_x &&
-		ball_pos_y < racket_left_y + racket_height &&
-		ball_pos_y > racket_left_y) {
-		//set fly depending on where it hits the paddle
-		float t = ((ball_pos_y - racket_left_y) / racket_height) - 0.5f;
-		ball_dir_x = fabs(ball_dir_x);
-		ball_dir_y = t;
-	}
-	//right racket
-	if (ball_pos_x > racket_right_x &&
-		ball_pos_x < racket_right_x + racket_width &&
-		ball_pos_y < racket_right_y + racket_height &&
-		ball_pos_y > racket_right_y) {
-		//set fly depending on where it hits the paddle
-		float t = ((ball_pos_y - racket_right_y) / racket_height) - 0.5f;
-		ball_dir_x = -fabs(ball_dir_x);
-		ball_dir_y = t;
-	}
-	//left wall
-	if (ball_pos_x < 0) {
-		++score_right;
-		ball_pos_x = width / 2;
-		ball_pos_y = height / 2;
-		ball_dir_x = fabs(ball_dir_x);
-		ball_dir_y = 0;
-	}
-	//right wall
-	if (ball_pos_x > width) {
-		++score_left;
-		ball_pos_x = width / 2;
-		ball_pos_y = height / 2;
-		ball_dir_x = -fabs(ball_dir_x);
-		ball_dir_y = 0;
-	}
-	//top barrier
-	if (ball_pos_y > height) {
-		ball_dir_y = -fabs(ball_dir_y);
-	}
-	//bottom barrier
-	if (ball_pos_y < 0) {
-		ball_dir_y = fabs(ball_dir_y);
-	}
-	normVec(ball_dir_x, ball_dir_y);
-}
 void keyboard() {
+	if (GetAsyncKeyState('P')) flagStart = true;
 	//left racket
-	if (GetAsyncKeyState('W')) racket_left_y += racket_speed;
-	if (GetAsyncKeyState('S')) racket_left_y -= racket_speed;
+	if (GetAsyncKeyState('W')) Paddle_Left.movePaddleVertical(true);
+	if (GetAsyncKeyState('S')) Paddle_Left.movePaddleVertical(false);
 	//right racket
-	if (GetAsyncKeyState(VK_UP)) racket_right_y += racket_speed;
-	if (GetAsyncKeyState(VK_DOWN)) racket_right_y -= racket_speed;
+	if (GetAsyncKeyState(VK_UP)) Paddle_Right.movePaddleVertical(true);
+	if (GetAsyncKeyState(VK_DOWN)) Paddle_Right.movePaddleVertical(false);
 }
 
 void drawRect(float x, float y, float width, float height) {
@@ -120,32 +58,60 @@ void drawRect(float x, float y, float width, float height) {
 
 void drawText(float x, float y, std::string text) {
 	glRasterPos2f(x, y);
-	glutBitmapString(GLUT_BITMAP_8_BY_13, (const unsigned char*)text.c_str());
+	glutBitmapString(GLUT_BITMAP_HELVETICA_18, (const unsigned char*)text.c_str());
 }
+
 void draw() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
 
-	//Draw the scene
-	//Draw the rackets
-	drawRect(racket_left_x, racket_left_y, racket_width, racket_height);
-	drawRect(racket_right_x, racket_right_y, racket_width, racket_height);
+	if (!flagStart) {
+		//Draw the scene
+		//Draw the rackets
+		drawRect(Paddle_Left.getPaddlePosx(), Paddle_Left.getPaddlePosy(), Paddle_Left.getPaddleWidth(), Paddle_Left.getPaddleHeight());
+		drawRect(Paddle_Right.getPaddlePosx(), Paddle_Right.getPaddlePosy(), Paddle_Right.getPaddleWidth(), Paddle_Right.getPaddleHeight());
 
-	//drawscore
-	std::ostringstream score;
-	score << score_left << ":" << score_right;
-	drawText(width / 2 - 10, height - 15, score.str());
-	//drawball
-	drawRect(ball_pos_x - ball_size / 2, ball_pos_y - ball_size / 2, ball_size, ball_size);
-
+		//drawscore
+		std::ostringstream score;
+		score << score_left << ":" << score_right;
+		drawText(screenWidth / 2 - 10, screenHeight - 15, score.str());
+		//drawball
+		drawRect(ball1.getBallPosx() - ball1.size() / 2, ball1.getBallPosy() - ball1.size() / 2, ball1.size(), ball1.size());
+	}else{
+		glRasterPos2f(screenWidth /3, screenHeight * 3 / 4); //position of text
+		std::string Welcome;
+		Welcome = "                              PONG!\nControls are W,S for left side, Up and Down arrows for the right.\n             Press P to pause, ESC to quit.\n       PUSH SPACE TO CONTINUE!";
+		glutBitmapString(GLUT_BITMAP_HELVETICA_18, (const unsigned char*)Welcome.c_str());
+	}
 	//swap buffers
 	glutSwapBuffers();
 }
 
+bool checkScore() {
+	//left wall
+	if (ball1.getBallPosx() < 0) {
+		++score_right;
+		ball1.resetBall(true);//reset the direction toward +x
+		return true;
+	}
+	else if(ball1.getBallPosx() > screenWidth) {
+		++score_left;
+		ball1.resetBall(false);
+		return true;
+	}else{
+		return false;
+	}
+}
+
 void update(int value) {
-	keyboard(); //update keypress
-	//update ball
-	updateBall();
+	if (GetAsyncKeyState(VK_SPACE)) flagStart = false; //check if we are resuming after a break
+	if (GetAsyncKeyState(VK_ESCAPE)) glutDestroyWindow(glutGetWindow()); //exit glloop
+	//check splashscreen or pause
+	if (flagStart == false) {
+		keyboard(); //update keypress
+		ball1.updateBall(Paddle_Left,Paddle_Right);//update ball
+		checkScore();
+	}
 
 	glutTimerFunc(interval, update, 0); //call update in an interval
 	//redisplay
@@ -154,11 +120,12 @@ void update(int value) {
 
 void enable2D(int width, int height) {
 	glViewport(0, 0, width, height);
-	glMatrixMode(GL_PROJECTION);
+	glMatrixMode(GL_PROJECTION); //set projection matrix
+	glLoadIdentity(); //resets matrix
+	glOrtho(0.0f, width, 0.0f, height, 0.0f, 1.0f); //dims of matrix
+	glMatrixMode(GL_MODELVIEW); //sets matrix
 	glLoadIdentity();
-	glOrtho(0.0f, width, 0.0f, height, 0.0f, 1.0f);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+	glutFullScreen();
 }
 
 int _tmain(int argc, char** argv)
@@ -166,17 +133,17 @@ int _tmain(int argc, char** argv)
 	//open a window
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-	glutInitWindowSize(width, height);
-	glutCreateWindow("Pongish!");
+	glutInitWindowSize(screenWidth, screenHeight);
+	glutCreateWindow("Pong-ish!");
 
 	//Register Callback Functions
 	glutDisplayFunc(draw);
-	glutTimerFunc(interval, update, 0);
+	glutTimerFunc(interval, update, 0); //glutMainLoop goes to update at interval
 
 	//set scene
-	enable2D(width, height);
+	enable2D(screenWidth, screenHeight);
 	glColor3f(1.0f, 1.0f, 1.0f);
-
+	
 	//start
 	glutMainLoop();
 
