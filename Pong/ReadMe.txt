@@ -28,9 +28,9 @@ StdAfx.h, StdAfx.cpp
 /////////////////////////////////////////////////////////////////////////////
 Other notes:
 
-Need to add OOP behaviors in order to split up and make the code more readable.
-Need to add random "powerups" to make the game more interesting!
-
 Original tutorial from http://noobtuts.com/cpp/2d-pong-game
+
+Changed code significantly to address a few problems with previous pong.
+Made Objects instead of variables and the paddles don't fly off the screen.
 
 /////////////////////////////////////////////////////////////////////////////
