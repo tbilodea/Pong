@@ -1,3 +1,5 @@
+This game was designed to solely work on Windows. A cross-platform version will come later.
+
 ========================================================================
     CONSOLE APPLICATION : Pong Project Overview
 ========================================================================
