@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Ball.h"
 #include "Pong.h"
+//need to implement paddle and wall hits based upon ball size
+//need to change Ball in Pong in order to make new instances instead of just one Highlander
 
 //updateBall determines ball direction based on its environment
 //Where P1 is the LEFT Paddle and P2 is the RIGHT Paddle
@@ -48,7 +50,7 @@ void Ball::updateBall(Paddle P1, Paddle P2) {
 	}
 }
 
-
+//getters and setters
 int Ball::getBallPosx(){
 	return ball_pos_x;
 }
@@ -60,6 +62,7 @@ int Ball::getBallPosy() {
 int Ball::size() {
 	return ball_size;
 }
+
 //after a score reset the ball
 void Ball::resetBall(bool headedRight) {
 	ball_pos_x = screenWidth / 2;

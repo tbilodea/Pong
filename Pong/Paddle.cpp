@@ -9,13 +9,13 @@ void Paddle::movePaddleVertical(bool up) {
 			padpos_y += pad_speed;
 		}
 	}else{ //else try to go down
-		if (padpos_y > 0) {
+		if (padpos_y > 0) { //check if it is at the bottom
 			padpos_y -= pad_speed;
 		}
 	}
 }
 
-//get positions for ball updating
+//getters required for updateBall in class Ball
 float Paddle::getPaddlePosx() {
 	return padpos_x;
 }
