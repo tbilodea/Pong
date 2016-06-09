@@ -22,7 +22,7 @@ int score_right = 0;
 
 //racket variables
 int racket_width = 5;
-int racket_height = 80;
+int racket_height = 40;
 int racket_speed = 3;
 
 //left racket pos
