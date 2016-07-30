@@ -1,8 +1,8 @@
 // Pong.cpp : Defines the entry point for the console application.
 //
-//TO DO: Make Draw an inherited class by all objects
+//TO DO: Make a Draw class that is inherited by all objects (or figure out a better way to recursively draw the screen in OpenGL)
 // Make it so multiple Balls can appear
-// make a real menu system (you're going to have to go think about that one)
+// Make a real menu system (you're going to have to go think about that one)
 
 #include "stdafx.h"
 
@@ -27,7 +27,7 @@ int score_right = 0;
 //racket variables
 int racket_width = 5;
 int racket_height = 40;
-int racket_speed = 3;
+int racket_speed = 1;
 
 //left racket pos
 float racket_left_x = 10.0f;
@@ -116,7 +116,7 @@ bool checkScore() {
 
 //update function that tells system when next to update
 void update(int value) {
-	if (GetAsyncKeyState(VK_SPACE)) flagStart = false; //check if we are resuming after a break
+	if (GetAsyncKeyState(VK_SPACE)) flagStart = false; //check if we are resuming
 	if (GetAsyncKeyState(VK_ESCAPE)) glutDestroyWindow(glutGetWindow()); //exit glloop
 	//check splashscreen or pause
 	if (flagStart == false) {
