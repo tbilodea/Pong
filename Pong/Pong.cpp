@@ -37,7 +37,7 @@ float racket_left_y = screenHeight/2;
 float racket_right_x = screenWidth - racket_width;
 float racket_right_y = screenHeight/2;
 
-//creating a Ball, and Paddle objects-Ball will need to be changed in the future to be destructible for powerups
+//creating a Ball, and Paddle objects --!Ball will need to be changed in the future to be destructible for powerups
 Ball ball1 = Ball(screenWidth/2,screenHeight/2,-1.0f,0.0,3,3);
 Paddle Paddle_Left = Paddle(racket_width, racket_height, racket_left_x, racket_left_y, racket_speed);
 Paddle Paddle_Right = Paddle(racket_width, racket_height, racket_right_x, racket_right_y, racket_speed);
@@ -54,7 +54,7 @@ void keyboard() {
 	if (GetAsyncKeyState(VK_DOWN)) Paddle_Right.movePaddleVertical(false);
 }
 
-//draws a rectangle (paddles and ball) --this should be a method in a Draw class
+//draws a rectangle (paddles and ball) --!to be revised into an inherited class for paddles and ball
 void drawRect(float x, float y, float width, float height) {
 	glBegin(GL_QUADS);
 		glVertex2f(x, y);
@@ -70,7 +70,6 @@ void drawText(float x, float y, std::string text) {
 	glutBitmapString(GLUT_BITMAP_HELVETICA_18, (const unsigned char*)text.c_str());
 }
 
-//In order to clean this function up, I need to make Draw class inherited by Paddle, Wall, and Ball
 //called continuously to update the field drawings
 void draw() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -93,8 +92,7 @@ void draw() {
 		Welcome = "PONG!\nControls are W,S for left side, Up and Down arrows for the right.\nPress P to pause, ESC to quit.\n\nPUSH SPACE TO CONTINUE!";
 		glutBitmapString(GLUT_BITMAP_HELVETICA_18, (const unsigned char*)Welcome.c_str());
 	}
-	//swap buffers
-	glutSwapBuffers();
+	glutSwapBuffers(); //swap Buffers
 }
 
 //sets which way ball will go after reset and increments the score
